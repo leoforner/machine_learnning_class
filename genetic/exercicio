@@ -51,7 +51,8 @@ def fitness(y):
 def torneio(população):
     vencedores = []
     ganhador = 0
-    for i in range(len(população)):
+
+    for i in range(0, int(len(população)/2)):
         competidores = população[random.randint(0,len(população)-1)], população[random.randint(0, len(população)-1)]
         vencedor = competidores[0] if fitness(competidores[0]) > fitness(competidores[1]) else competidores[1]
 
@@ -61,28 +62,44 @@ def torneio(população):
 
 
 def crossover(população,n):
+    
+    
     filhos = []
-    for i in range(0, n-1):
+    for i in range(0, int(n/2)):
         if random.random() > Pc: 
             pai1 = get_bits(população[i])
-            pai2 = get_bits(população[i+1])
+            pai2 = get_bits(população[i+1]) if i == n/2 else get_bits(população[0])
             ponto_de_corte = random.randint(0, L/2)
             ponto_de_corte_2 = random.randint(L/2, L)
             filho1 = pai1[:ponto_de_corte] + pai2[ponto_de_corte:ponto_de_corte_2] + pai1[ponto_de_corte_2:]
             filho2 = pai2[:ponto_de_corte] + pai1[ponto_de_corte:ponto_de_corte_2] + pai2[ponto_de_corte_2:]
-            if get_float(filho1) > math.pi or get_float(filho2) > math.pi:
+            if (isinstance(get_float(filho1), float) and not math.isnan(get_float(filho1)) and
+                isinstance(get_float(filho2), float) and not math.isnan(get_float(filho2))):
+                if get_float(filho1) > math.pi or get_float(filho2) > math.pi or get_float(filho1) < 0 or get_float(filho2) < 0:
+                    filho1 = pai1
+                    filho2 = pai2            
+            else:
                 filho1 = pai1
                 filho2 = pai2
+
+
+
+
+
             filhos.append(get_float(filho1))
-            filhos.append(get_float(filho2)) 
-            
+            filhos.append(get_float(filho2))
         else:
-            filhos.append(população[i])
-            filhos.append(população[i+1])
-        
+            filho1 = população[i]
+            filho2 = população[i+1] if i == n/2 else população[0]
+            filhos.append(filho1)
+            filhos.append(filho2)
+
+    
+
     return filhos
 
 def mutação(população):
+
     for i in range(len(população)):
         if random.random() < Pm:
             ponto_de_mutação = random.randint(0, L-1)
@@ -105,8 +122,10 @@ def mutação(população):
                     individuo = individuo[:ponto_de_mutação] + str(int(not int(individuo[ponto_de_mutação])))
                 else:
                     individuo = individuo[:ponto_de_mutação] + str(int(not int(individuo[ponto_de_mutação]))) + individuo[ponto_de_mutação+1:]
-      
+
+
             população[i] = get_float(individuo)
+
     return população
 
     
@@ -123,7 +142,7 @@ def garfico_base(população):
     plt.xlim(0, math.pi)
     plt.ylim(0, 4.5)
 
-
+'''
 
 def evolução(quantidade, geracoes):
     população = criacao(quantidade)
@@ -140,8 +159,32 @@ def evolução(quantidade, geracoes):
     
     ani = FuncAnimation(fig, update, frames=geracoes, repeat=False)
     plt.show()
+'''
 
-Pm = 0.01
-Pc = 0.9
+def evolução(quantidade, geracoes):
+    população = criacao(quantidade)
+    media = []
+    print('aaaaaaaa')
+    for i in range(geracoes):
+        media.append(sum([fitness(individual) for individual in população])/len(população))
+        vencedores = torneio(população)
+        população = crossover(vencedores, quantidade)
+        população = mutação(população)
+        
+
+    print(media)
+    x = range(geracoes)
+    y = media
+    plt.plot(x, y, 'bo-')
+    plt.xlabel('Gerações')
+    plt.ylabel('Fitness')
+    plt.title('Média de Fitness por Geração')
+    plt.show()
+
+
+
+
+Pm = 0.001
+Pc = 0.3
 
 evolução(1000, 50)
