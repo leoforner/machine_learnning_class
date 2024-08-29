@@ -61,12 +61,11 @@ def torneio(população):
 
 
 
-def crossover(população,n):
-    
-    
+def crossover(população,n):    
     filhos = []
     for i in range(0, int(n/2)):
-        if random.random() > Pc: 
+        if random.random() < Pc: 
+            print('crossover')
             pai1 = get_bits(população[i])
             pai2 = get_bits(população[i+1]) if i == n/2 else get_bits(população[0])
             ponto_de_corte = random.randint(0, L/2)
@@ -81,10 +80,6 @@ def crossover(população,n):
             else:
                 filho1 = pai1
                 filho2 = pai2
-
-
-
-
 
             filhos.append(get_float(filho1))
             filhos.append(get_float(filho2))
@@ -102,6 +97,7 @@ def mutação(população):
 
     for i in range(len(população)):
         if random.random() < Pm:
+            print('mutação')
             ponto_de_mutação = random.randint(0, L-1)
             individuo = get_bits(população[i])                
             if ponto_de_mutação == 0:
@@ -113,7 +109,7 @@ def mutação(população):
             
 
 
-            while get_float(individuo) > math.pi:
+            while get_float(individuo) > math.pi or get_float(individuo) < 0 or not isinstance(get_float(individuo), float) or math.isnan(get_float(individuo)):
                 ponto_de_mutação = random.randint(0, L-1)
                 individuo = get_bits(população[i])   
                 if ponto_de_mutação == 0:
@@ -129,62 +125,77 @@ def mutação(população):
     return população
 
     
-def garfico_base(população):
+def garfico_1(população, ax):
     x = np.linspace(0, math.pi, 10000)
     y = [fitness(val) for val in x]
-    plt.plot(x, y)
-
     fitness_values = [fitness(individual) for individual in população]
-    plt.plot(população, fitness_values, 'bo')
-    plt.xlabel('Individual')
-    plt.ylabel('Fitness')
-    plt.title('Population Fitness')
-    plt.xlim(0, math.pi)
-    plt.ylim(0, 4.5)
+    ax.plot(x, y)
+    ax.plot(população, fitness_values, 'bo')
+    ax.set_xlabel('Individual')
+    ax.set_ylabel('Fitness')
+    ax.set_title('Population Fitness')
+    ax.set_xlim(0, math.pi)
+    ax.set_ylim(0, 4.5)
+    
+
+def garfico_2(media, geracao, geracoes, ax):
+    #print(media[-1:])
+    x = geracao
+    y = media
+    ax.plot(x, y, 'b-')
+    ax.set_xlabel('Gerações')
+    ax.set_ylabel('Fitness')
+    ax.set_title('Média de Fitness por Geração')
+    ax.set_xlim(-1, geracoes + 5)
+    ax.set_ylim(0, 4.5)
+    
 
 '''
+
 
 def evolução(quantidade, geracoes):
     população = criacao(quantidade)
     
-    fig, ax = plt.subplots()
+    # Criação das figuras e eixos
+    fig, (ax1, ax2) = plt.subplots(2, 1)
+    media = []
+    geracao = []
+
+    # Ajuste do espaçamento entre os gráficos
+    plt.subplots_adjust(hspace=0.5)  # Ajuste o valor conforme necessário
+    
     
     def update(frame):
         nonlocal população
-        ax.clear()
-        garfico_base(população)
+        ax1.clear()
+        ax2.clear()
+        media.append(sum([fitness(individual) for individual in população])/len(população))
+        garfico_1(população, ax1)
+        geracao.append(frame)
+        garfico_2(media, geracao, geracoes, ax2) 
         vencedores = torneio(população)
         população = crossover(vencedores, quantidade)
         população = mutação(população)
+      
     
-    ani = FuncAnimation(fig, update, frames=geracoes, repeat=False)
+    ani = FuncAnimation(fig, update, frames=geracoes-1, repeat=False, interval=1)
     plt.show()
+
+
+
 '''
 
 def evolução(quantidade, geracoes):
     população = criacao(quantidade)
-    media = []
-    print('aaaaaaaa')
     for i in range(geracoes):
-        media.append(sum([fitness(individual) for individual in população])/len(população))
         vencedores = torneio(população)
         população = crossover(vencedores, quantidade)
         população = mutação(população)
         
 
-    print(media)
-    x = range(geracoes)
-    y = media
-    plt.plot(x, y, 'bo-')
-    plt.xlabel('Gerações')
-    plt.ylabel('Fitness')
-    plt.title('Média de Fitness por Geração')
-    plt.show()
 
+# quanto maior maior a chance de reprodução e mutação
+Pm = 0.0
+Pc = 0.00
 
-
-
-Pm = 0.001
-Pc = 0.3
-
-evolução(1000, 50)
+evolução(2000, 100)
