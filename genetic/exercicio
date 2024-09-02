@@ -65,7 +65,6 @@ def crossover(população,n):
     filhos = []
     for i in range(0, int(n/2)):
         if random.random() < Pc: 
-            print('crossover')
             pai1 = get_bits(população[i])
             pai2 = get_bits(população[i+1]) if i == n/2 else get_bits(população[0])
             ponto_de_corte = random.randint(0, L/2)
@@ -97,7 +96,6 @@ def mutação(população):
 
     for i in range(len(população)):
         if random.random() < Pm:
-            print('mutação')
             ponto_de_mutação = random.randint(0, L-1)
             individuo = get_bits(população[i])                
             if ponto_de_mutação == 0:
@@ -136,6 +134,7 @@ def garfico_1(população, ax):
     ax.set_title('Population Fitness')
     ax.set_xlim(0, math.pi)
     ax.set_ylim(0, 4.5)
+    ax.grid(True)  
     
 
 def garfico_2(media, geracao, geracoes, ax):
@@ -148,9 +147,10 @@ def garfico_2(media, geracao, geracoes, ax):
     ax.set_title('Média de Fitness por Geração')
     ax.set_xlim(-1, geracoes + 5)
     ax.set_ylim(0, 4.5)
+    ax.grid(True)
     
 
-'''
+
 
 
 def evolução(quantidade, geracoes):
@@ -192,10 +192,10 @@ def evolução(quantidade, geracoes):
         população = crossover(vencedores, quantidade)
         população = mutação(população)
         
-
+'''
 
 # quanto maior maior a chance de reprodução e mutação
-Pm = 0.0
-Pc = 0.00
+Pm = 0.01
+Pc = 0.1
 
 evolução(2000, 100)
