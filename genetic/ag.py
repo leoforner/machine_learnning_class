@@ -197,7 +197,7 @@ def evolução(quantidade, geracoes):
 '''
 
 # quanto maior maior a chance de reprodução e mutação
-Pm = 0.01
 Pc = 0.1
+Pm = 1
 
-evolução(2000, 100)
+evolução(1000, 100)
