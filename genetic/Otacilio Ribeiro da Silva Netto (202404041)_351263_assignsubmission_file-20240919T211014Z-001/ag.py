@@ -12,7 +12,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Parâmetros do Algoritmo Genético')
 parser.add_argument('--Pc', type=float, default=0.9, help='Probabilidade de crossover')
 parser.add_argument('--Pm', type=float, default=0.01, help='Probabilidade de mutação')
-parser.add_argument('--N', type=int, default=10, help='Tamanho da população')
+parser.add_argument('--N', type=int, default=100, help='Tamanho da população')
 parser.add_argument('--nF', type=int, default=100, help='Número de quadros')
 args = parser.parse_args()
 
