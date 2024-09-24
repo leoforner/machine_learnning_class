@@ -50,27 +50,37 @@ def gradient(i, theta, xs, ys):
     return theta[i] - (alpha / len(ys)) * sum([(h(xs[j], theta) - ys[j]) * xs[j]**i for j in range(len(ys))])
 
 def plot_fronteira(theta):
-    plt.vlines(, 0, 1)
+    plt.vlines(-theta[0] / theta[1], ymin=-0.1, ymax=1.1, colors='r')
     
 
 ''' plota em subplots: - os dados, com a fronteira de decisao
 - e os dados classificados
 '''
 def print_modelo(theta, xs, ys):
-    pass
+    clf()
+    plot(xs[:m // 2], ys[:m // 2], '.')
+    plot(xs[m // 2:], ys[m // 2:], '.')
+    plot_fronteira(theta)
+    show()
+
 
 def accuracy(ys, predictions):
     num = sum(ys == predictions)
     return num / len(ys)
 
 
-alpha = 0,1 # completar
+alpha = 0.1 # completar
 epochs = 600
 theta = [1,2] # completar
 
 for k in range(epochs): # 10000
-
     # apply gradient decent
+    theta[0] = gradient(0, theta, xs, ys)
+    theta[1] = gradient(1, theta, xs, ys)
 
-    # show classication performance
-    print('Acuracia:', accuracy(ys, predictions))
+
+# show classication performance
+
+predictions = h(xs, theta) >= 0.5
+print('Acuracia:', accuracy(ys, predictions))
+print_modelo(theta, xs, ys)
